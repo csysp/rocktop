@@ -1,7 +1,6 @@
-This is a test environment for the "rocktop" vocal model training/inference system's various core functions.
+This is a test environment for the "rocktop" vocal model training/inference system's various core functions. The readme will be updated as development progresses, pretty much nothing is implemented. 
 
 Below are initial renders of the core flow and stack flow for ease of reference.
-
 ## Architecture Diagrams
 
 ### Core Flow
