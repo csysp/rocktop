@@ -4,12 +4,16 @@
     "fontFamily": "Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji",
     "lineColor": "#ffffff",
     "arrowheadColor": "#ffffff",
-    "textColor": "#e5e7eb"
+    "textColor": "#e5e7eb",
+    "primaryTextColor": "#e5e7eb",
+    "secondaryTextColor": "#e5e7eb",
+    "tertiaryTextColor": "#e5e7eb"
   },
   "flowchart": {
     "curve": "linear",
     "htmlLabels": false,
     "defaultRenderer": "elk",
     "layout": "elk"
-  }
+  },
+  "themeCSS": "\n/* Dark mode cluster titles should be dark on light panels */\n.cluster > .label text { fill: #111111 !important; }\n.cluster > .label span { color: #111111 !important; }\n/* Node labels remain light for dark node fills */\n.nodeLabel > text { fill: #e5e7eb; }\n.label foreignObject div { color: inherit; }\n"
 }
