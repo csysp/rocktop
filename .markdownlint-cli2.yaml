@@ -1,0 +1,5 @@
+globs:
+  - "**/*.md"
+ignores:
+  - "AGENTS.md" # agent guidance doc; formatting is intentionally free-form
+
