@@ -1,6 +1,11 @@
-This is a test environment for the "rocktop" vocal model training/inference system's various core functions. The readme will be updated as development progresses, pretty much nothing is implemented. 
+# rocktop
+
+This is the monorepo for the "rocktop" vocal model training/inference system's various core functions and supporting systems. The readme will be updated as development progresses, pretty much nothing is implemented. After multiple years of using various singing model inference platforms and being unsatisfied with the lack of free, transparent options available it became clear an open source, flexible, extensible offering was needed. Firstly for personal use, secondarily for whomever may need this toolset.
+
+The software is free to use under the GPLv3 licence but models trained may carry copyrights from the source vocalist, do your business right. 
 
 Below are initial renders of the core flow and stack flow for ease of reference.
+
 ## Architecture Diagrams
 
 ### Core Flow
@@ -151,19 +156,6 @@ flowchart TB
   NVIDIA --> Infer
 ```
 
-## CI Overview
-
-- Lint/Format: Ruff, Black, Codespell
-- Typing: mypy
-- Tests: pytest (skips if none)
-- Security: Gitleaks, Bandit, pip-audit (blocking)
-- SBOMs: Syft (repo SPDX + CycloneDX), Syft (image SPDX + CycloneDX)
-- Scanning: Trivy filesystem (always), Trivy image (on image build)
-- Docker hygiene: Hadolint
-- Kubernetes: kubeconform, kube-linter, OPA/Conftest policies
-- Images: Buildx build, GHCR push on main/master, Cosign sign + SBOM attest
-- Workflows use concurrency to cancel superseded runs
-
 ## Platforms
 
 - Deploy target: Ubuntu Server LTS (pinned to 24.04 in CI runners).
@@ -199,3 +191,16 @@ Make targets (uses uv where applicable):
 - make serve | make mcp-smoke
 - make sox-resample IN=raw_audio OUT=data/processed
 - make sox-normalize IN=data/processed OUT=data/normalized
+
+## CI Overview
+
+- Lint/Format: Ruff, Black, Codespell
+- Typing: mypy
+- Tests: pytest (skips if none)
+- Security: Gitleaks, Bandit, pip-audit (blocking)
+- SBOMs: Syft (repo SPDX + CycloneDX), Syft (image SPDX + CycloneDX)
+- Scanning: Trivy filesystem (always), Trivy image (on image build)
+- Docker hygiene: Hadolint
+- Kubernetes: kubeconform, kube-linter, OPA/Conftest policies
+- Images: Buildx build, GHCR push on main/master, Cosign sign + SBOM attest
+- Workflows use concurrency to cancel superseded runs
