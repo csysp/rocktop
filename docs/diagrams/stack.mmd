@@ -1,0 +1,54 @@
+---
+config:
+  layout: elk
+---
+flowchart LR
+ subgraph Core["Core Stack"]
+        PyTorch["PyTorch 2.3+ ROCm or CUDA"]
+        AudioLibs["torchaudio, librosa, soundfile"]
+        Hydra["Hydra"]
+        TrainRuntimes["Lightning or Accelerate"]
+        Serve["TorchServe or FastAPI"]
+  end
+ subgraph Services["K8s Services"]
+        Preproc["K8s Job: Preprocessing"]
+        Train["K8s Job: Training"]
+        Infer["K8s Deployment: Inference"]
+        Track["MLflow Server"]
+        ObjStore["MinIO or S3"]
+        Monitor["Prometheus and Grafana"]
+  end
+ subgraph Models["Models and Features"]
+        Units["HuBERT or ContentVec units"]
+        F0["RMVPE F0"]
+        VC["RVC 48kHz"]
+        Singer["DiffSinger or SoVITS"]
+        Vocoder["BigVGAN or Vocos"]
+  end
+ subgraph GPU["GPU Targets"]
+        AMD["ROCm test"]
+        NVIDIA["CUDA prod"]
+        AMDPlugin["AMD K8s Device Plugin"]
+        NVPlugin["NVIDIA K8s Device Plugin"]
+  end
+    PyTorch --> TrainRuntimes
+    TrainRuntimes --> Train
+    AudioLibs --> Preproc
+    Serve --> Infer & VC
+    Hydra --> Train
+    Preproc --> Units & F0 & ObjStore
+    Units --> VC
+    F0 --> VC
+    VC --> Vocoder & Vocoder
+    Train --> Track & ObjStore
+    Track --> ObjStore
+    Infer --> ObjStore
+    Vocoder --> Infer
+    AMDPlugin --> AMD
+    NVPlugin --> NVIDIA
+    AMD --> Train & Infer
+    NVIDIA --> Train & Infer
+    style Core fill:#eef,stroke:#88a
+    style Services fill:#efe,stroke:#8a8
+    style Models fill:#ffe,stroke:#aa8
+    style GPU fill:#fef,stroke:#a8a

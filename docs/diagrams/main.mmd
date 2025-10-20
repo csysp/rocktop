@@ -1,0 +1,93 @@
+---
+config:
+  layout: elk
+---
+flowchart LR
+ subgraph Clients["Clients"]
+    direction TB
+        UIVoice[["Studio or DAW"]]
+  end
+ subgraph Inference["Inference (48kHz, low-latency)"]
+    direction TB
+        FastAPI["FastAPI + Uvicorn"]
+        TorchServe["TorchServe"]
+        Stream["Chunking + Overlap-Add"]
+        ModelInfer["PyTorch Model"]
+        BigVGAN["BigVGAN or Vocos"]
+  end
+ subgraph Models["Models"]
+    direction TB
+        RVC["RVC 48kHz"]
+        DiffSinger["DiffSinger or SoVITS"]
+        Vocoder["BigVGAN or Vocos"]
+  end
+ subgraph Training["Training and Preprocessing"]
+    direction TB
+        Preproc["Preprocess: SoX SRC, peak norm, trim"]
+        Feats["Features: HuBERT or ContentVec, RMVPE"]
+        Hydra["Hydra Configs"]
+        Trainer["Trainer: Lightning or Accelerate"]
+        Metrics["Audio metrics"]
+  end
+ subgraph Storage["Storage and Tracking"]
+    direction TB
+        Data[("MinIO or S3")]
+        MLflow[("MLflow Tracking")]
+  end
+ subgraph Infra["Infra and GPU Targets"]
+    direction TB
+        ROCm["ROCm"]
+        CUDA["CUDA"]
+        K8s["K8s"]
+  end
+ subgraph ROCm["ROCm test"]
+    direction TB
+        ROCmImg["pytorch rocm image"]
+  end
+ subgraph CUDA["CUDA prod"]
+    direction TB
+        CUDAImg["pytorch cuda image"]
+  end
+ subgraph K8s["Kubernetes"]
+    direction TB
+        AMDPlugin["AMD Device Plugin"]
+        NVPlugin["NVIDIA Device Plugin"]
+        Jobs["K8s Jobs"]
+        Deploys["K8s Deployments with HPA"]
+        PVC["PVC for datasets"]
+  end
+ subgraph Audio["Audio Quality"]
+    direction TB
+        SR["48kHz end to end"]
+        F32["32 bit float"]
+        SRC["SoX soxr linear phase"]
+        Loudness["Peak normalize to -1 dBFS"]
+  end
+    UIVoice --> FastAPI
+    FastAPI --> Stream
+    Stream --> ModelInfer
+    ModelInfer --> BigVGAN & RVC & Vocoder
+    UIVoice -.-> TorchServe
+    TorchServe --> ModelInfer
+    BigVGAN --> FastAPI
+    ModelInfer -.-> DiffSinger
+    Data --> Preproc & FastAPI
+    Preproc --> Feats
+    Feats --> Trainer & Data
+    Hydra --> Trainer
+    Trainer --> MLflow & Data
+    MLflow --> FastAPI
+    Jobs --> Trainer
+    Deploys --> FastAPI
+    PVC --> Trainer & FastAPI
+    AMDPlugin --> K8s
+    NVPlugin --> K8s
+    ROCmImg --> Trainer & FastAPI
+    CUDAImg --> Trainer & FastAPI
+    Audio -. guides .-> Preproc & Feats & ModelInfer
+    style Audio fill:#fff,stroke:#bbb,stroke-dasharray: 3 3
+    style Inference fill:#eef,stroke:#88a
+    style Training fill:#efe,stroke:#8a8
+    style Models fill:#ffe,stroke:#aa8
+    style Storage fill:#fef,stroke:#a8a
+    style Infra fill:#eef,stroke:#88a

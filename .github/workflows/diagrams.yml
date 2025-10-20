@@ -1,0 +1,67 @@
+name: Build diagrams
+
+on:
+  push:
+    paths:
+      - 'docs/diagrams/*.mmd'
+      - 'docs/diagrams/*.json'
+      - '.github/workflows/diagrams.yml'
+      - 'README.md'
+  workflow_dispatch:
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Mermaid CLI and SVGO
+        run: |
+          npm i -D @mermaid-js/mermaid-cli svgo
+
+      - name: Sanitize Mermaid sources (strip YAML frontmatter)
+        run: |
+          mkdir -p docs/diagrams/.build
+          sanitize() {
+            in="$1"; out="$2";
+            awk 'BEGIN{fm=0}
+              {
+                if(fm==0){
+                  if(NR==1 && $0=="---"){fm=1; next} else {print $0; next}
+                }
+                if(fm==1){
+                  if($0=="---"){fm=2; next} else {next}
+                }
+                if(fm==2){ print $0 }
+              }' "$in" > "$out"
+          }
+          sanitize docs/diagrams/main.mmd  docs/diagrams/.build/main.mmd
+          sanitize docs/diagrams/stack.mmd docs/diagrams/.build/stack.mmd
+
+      - name: Render diagrams (light)
+        run: |
+          npx mmdc -i docs/diagrams/.build/main.mmd  -o docs/diagrams/main.light.svg  --backgroundColor transparent --configFile docs/diagrams/mermaid.light.json
+          npx mmdc -i docs/diagrams/.build/stack.mmd -o docs/diagrams/stack.light.svg --backgroundColor transparent --configFile docs/diagrams/mermaid.light.json
+
+      - name: Render diagrams (dark)
+        run: |
+          npx mmdc -i docs/diagrams/.build/main.mmd  -o docs/diagrams/main.dark.svg  --backgroundColor transparent --configFile docs/diagrams/mermaid.dark.json
+          npx mmdc -i docs/diagrams/.build/stack.mmd -o docs/diagrams/stack.dark.svg --backgroundColor transparent --configFile docs/diagrams/mermaid.dark.json
+
+      - name: Optimize SVGs
+        run: |
+          npx svgo docs/diagrams/main.*.svg docs/diagrams/stack.*.svg
+
+      - name: Commit SVG updates
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(diagrams): update pre-rendered SVGs"
+          file_pattern: docs/diagrams/*.svg
