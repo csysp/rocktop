@@ -15,5 +15,5 @@
     "defaultRenderer": "elk",
     "layout": "elk"
   },
-  "themeCSS": "\n/* Dark mode cluster titles should be dark on light panels */\n.cluster > .label text { fill: #111111 !important; }\n.cluster > .label span { color: #111111 !important; }\n/* Node labels remain light for dark node fills */\n.nodeLabel > text { fill: #e5e7eb; }\n.label foreignObject div { color: inherit; }\n"
+  "themeCSS": "\n/* Dim subgraph panels (clusters) for dark mode */\n.cluster rect, .cluster path { fill: #1f2937 !important; fill-opacity: 0.25 !important; stroke: #4b5563 !important; }\n/* Cluster titles readable on dim panels */\n.cluster > .label text { fill: #e5e7eb !important; }\n.cluster > .label span { color: #e5e7eb !important; }\n/* Node labels remain light */\n.nodeLabel > text { fill: #e5e7eb; }\n.label foreignObject div { color: inherit; }\n"
 }
