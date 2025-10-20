@@ -48,13 +48,13 @@ jobs:
 
       - name: Render diagrams (light)
         run: |
-          npx mmdc -i docs/diagrams/.build/main.mmd  -o docs/diagrams/main.light.svg  --backgroundColor transparent --configFile docs/diagrams/mermaid.light.json
-          npx mmdc -i docs/diagrams/.build/stack.mmd -o docs/diagrams/stack.light.svg --backgroundColor transparent --configFile docs/diagrams/mermaid.light.json
+          npx mmdc -i docs/diagrams/.build/main.mmd  -o docs/diagrams/main.light.svg  --backgroundColor transparent --configFile docs/diagrams/mermaid.light.json --puppeteerConfigFile docs/diagrams/puppeteer.json
+          npx mmdc -i docs/diagrams/.build/stack.mmd -o docs/diagrams/stack.light.svg --backgroundColor transparent --configFile docs/diagrams/mermaid.light.json --puppeteerConfigFile docs/diagrams/puppeteer.json
 
       - name: Render diagrams (dark)
         run: |
-          npx mmdc -i docs/diagrams/.build/main.mmd  -o docs/diagrams/main.dark.svg  --backgroundColor transparent --configFile docs/diagrams/mermaid.dark.json
-          npx mmdc -i docs/diagrams/.build/stack.mmd -o docs/diagrams/stack.dark.svg --backgroundColor transparent --configFile docs/diagrams/mermaid.dark.json
+          npx mmdc -i docs/diagrams/.build/main.mmd  -o docs/diagrams/main.dark.svg  --backgroundColor transparent --configFile docs/diagrams/mermaid.dark.json --puppeteerConfigFile docs/diagrams/puppeteer.json
+          npx mmdc -i docs/diagrams/.build/stack.mmd -o docs/diagrams/stack.dark.svg --backgroundColor transparent --configFile docs/diagrams/mermaid.dark.json --puppeteerConfigFile docs/diagrams/puppeteer.json
 
       - name: Optimize SVGs
         run: |
