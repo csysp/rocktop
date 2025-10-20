@@ -1,0 +1,32 @@
+name: Typecheck
+
+on:
+  pull_request:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  mypy:
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v2
+
+      - name: Sync dev environment
+        run: |
+          uv python install 3.11
+          uv sync --all-extras --dev
+
+      - name: Run mypy
+        run: uv run mypy src servers/rocktop_mcp

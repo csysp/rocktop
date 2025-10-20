@@ -1,0 +1,33 @@
+name: Scripts
+
+on:
+  pull_request:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  shell-scripts:
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: ShellCheck
+        if: ${{ hashFiles('**/*.sh') != '' }}
+        uses: ludeeus/action-shellcheck@2.0.0
+
+      - name: Setup shfmt
+        if: ${{ hashFiles('**/*.sh') != '' }}
+        uses: mfinelli/setup-shfmt@v1
+
+      - name: shfmt (diff mode)
+        if: ${{ hashFiles('**/*.sh') != '' }}
+        run: |
+          set -e
+          mapfile -t scripts < <(git ls-files '*.sh' 'scripts/**/*.sh' || true)
+          if [ ${#scripts[@]} -eq 0 ]; then
+            echo "No shell scripts found"; exit 0; fi
+          shfmt -d "${scripts[@]}"

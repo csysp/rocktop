@@ -1,0 +1,19 @@
+sample_rate_hz: 48000
+audio_float_dtype: float32
+
+paths:
+  root: .
+  data_dir: data
+  raw_dir: data/raw
+  processed_dir: data/processed
+  cache_dir: cache
+  f0_cache_dir: cache/f0
+  units_cache_dir: cache/units
+
+trainer:
+  backend: lightning  # or accelerate
+  precision: 32
+  devices: 1
+  seed: 1337
+  batch: 4
+  epochs: 1

@@ -1,0 +1,29 @@
+name: MCP Smoke
+
+on:
+  pull_request:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  stub-smoke:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-latest, windows-latest]
+        python: ['3.11']
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: MCP stub smoke (Python)
+        run: python scripts/mcp_smoke.py

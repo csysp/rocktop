@@ -1,0 +1,33 @@
+name: SBOM
+
+on:
+  pull_request:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  sbom-repo:
+    name: Generate SBOM (repository)
+    runs-on: ubuntu-24.04
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Syft SBOM (filesystem)
+        uses: anchore/sbom-action@v0
+        with:
+          path: .
+          output-file: sbom-repo.spdx.json
+          format: spdx-json
+          artifact-name: sbom-repo.spdx.json
+
+      - name: Syft SBOM (filesystem CycloneDX)
+        uses: anchore/sbom-action@v0
+        with:
+          path: .
+          output-file: sbom-repo.cdx.json
+          format: cyclonedx-json
+          artifact-name: sbom-repo.cdx.json

@@ -1,0 +1,16 @@
+FROM pytorch/pytorch:2.4.1-rocm6.0
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg sox libsox-dev libsox-fmt-all libsndfile1 libsamplerate0 \
+    rubberband-cli espeak-ng git curl build-essential pkg-config \
+ && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+COPY . /workspace
+
+# Install minimal runtime deps (app stub only)
+RUN pip install --no-cache-dir numpy==1.26.4 fastapi==0.115.0 uvicorn[standard]==0.30.6 soundfile==0.12.1
+
+EXPOSE 8080
+CMD ["python", "-m", "uvicorn", "app.infer:app", "--host", "0.0.0.0", "--port", "8080"]

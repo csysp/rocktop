@@ -1,0 +1,39 @@
+name: Docs
+
+on:
+  pull_request:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  docs:
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Markdownlint
+        uses: DavidAnson/markdownlint-cli2-action@v15
+        with:
+          globs: |
+            **/*.md
+
+      - name: Setup Python
+        if: ${{ hashFiles('notebooks/**/*.ipynb') != '' }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup uv
+        if: ${{ hashFiles('notebooks/**/*.ipynb') != '' }}
+        uses: astral-sh/setup-uv@v2
+
+      - name: nbstripout check
+        if: ${{ hashFiles('notebooks/**/*.ipynb') != '' }}
+        run: |
+          uv python install 3.11
+          uv sync --all-extras --dev
+          uv run nbstripout --check notebooks || (echo "Notebooks not stripped" && exit 1)

@@ -1,0 +1,47 @@
+name: Security
+
+on:
+  pull_request:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  secrets:
+    name: Gitleaks
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  sast-and-deps:
+    name: Bandit & pip-audit
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v2
+      - name: Sync dev environment
+        run: |
+          uv python install 3.11
+          uv sync --all-extras --dev
+      - name: Bandit
+        run: uv run bandit -q -r src servers/rocktop_mcp -x tests
+      - name: pip-audit
+        run: uv run pip-audit -l

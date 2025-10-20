@@ -1,0 +1,14 @@
+[project]
+name = "rocktop-mcp"
+version = "0.0.1"
+description = "Rocktop MCP server (Python) — stub"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+rocktop-mcp = "rocktop_mcp.__main__:main"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"

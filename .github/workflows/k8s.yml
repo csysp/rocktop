@@ -1,0 +1,35 @@
+name: Kubernetes
+
+on:
+  pull_request:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  k8s-validate:
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Kubeconform (schema validation)
+        if: ${{ hashFiles('k8s/**/*.y?(a)ml') != '' }}
+        uses: docker://ghcr.io/yannh/kubeconform:latest
+        with:
+          args: -ignore-missing-schemas -strict -summary k8s
+
+      - name: Kube-linter (best practices)
+        if: ${{ hashFiles('k8s/**/*.y?(a)ml') != '' }}
+        uses: stackrox/kube-linter-action@v1.0.5
+        with:
+          directory: k8s
+          # Add custom configuration file later if needed
+
+      - name: Conftest (OPA policies)
+        if: ${{ hashFiles('k8s/**/*.y?(a)ml') != '' && hashFiles('policy/k8s/**/*.rego') != '' }}
+        uses: docker://openpolicyagent/conftest
+        with:
+          args: test -p policy/k8s k8s

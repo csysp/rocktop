@@ -1,0 +1,33 @@
+name: Dockerfiles
+
+on:
+  pull_request:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  docker-hygiene:
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install hadolint
+        if: ${{ hashFiles('**/Dockerfile', 'docker/**/Dockerfile*') != '' }}
+        run: |
+          curl -sSL -o /usr/local/bin/hadolint \
+            https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64
+          chmod +x /usr/local/bin/hadolint
+
+      - name: Hadolint (lint Dockerfiles)
+        if: ${{ hashFiles('**/Dockerfile', 'docker/**/Dockerfile*') != '' }}
+        run: |
+          set -e
+          mapfile -t files < <(git ls-files '**/Dockerfile' 'docker/**/Dockerfile*' || true)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No Dockerfiles found"; exit 0; fi
+          echo "Linting: ${files[*]}"
+          hadolint "${files[@]}"

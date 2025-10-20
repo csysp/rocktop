@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rocktop-preproc
+  labels:
+    app: rocktop-preproc
+    owner: dev
+spec:
+  template:
+    metadata:
+      labels:
+        app: rocktop-preproc
+        owner: dev
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: preproc
+          image: busybox:1.36
+          command: ["/bin/sh", "-c", "echo preproc stub && sleep 5"]
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "64Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
