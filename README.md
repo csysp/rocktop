@@ -4,10 +4,14 @@ This is the monorepo for the "rocktop" vocal model training/inference system's v
 
 The software is free to use under the GPLv3 licence but models trained may carry copyrights from the source vocalist, do your business right. 
 
-Core Repo Design Vision: End-to-end singer/voice training + ultra‑clean inference, reproducible across AMD (ROCm test) and NVIDIA (A6000 prod), containerized and schedulable via K8s.
-Core Stack: PyTorch 2.3+ (ROCm and CUDA builds), torchaudio/librosa/soundfile, Hydra configs, Lightning for training, TorchServe+FastAPI+UVicorn for inference.
-Services: training jobs (K8s Job), offline preprocessing (K8s Job), realtime/ low‑latency inference (Deployment + HPA), experiment tracking (MLflow), object storage (MinIO/S3), monitoring (Prometheus/Grafana).
-Local Models: voice conversion and/or singing synthesis with emphasis on fidelity: RVC (Retrieval‑based Voice Conversion) + BigVGAN 48 kHz vocoder + precompute content features (HuBERT/ ContentVec) + high‑quality F0 (RMVPE).
+### Core Repo Design Vision
+End-to-end singer/voice training + ultra‑clean inference, reproducible across AMD (ROCm test) and NVIDIA (A6000 prod), containerized and schedulable via K8s.
+### Core Stack
+PyTorch 2.3+ (ROCm and CUDA builds), torchaudio/librosa/soundfile, Hydra configs, Lightning for training, TorchServe+FastAPI+UVicorn for inference.
+### Services 
+Training jobs (K8s Job), offline preprocessing (K8s Job), realtime/ low‑latency inference (Deployment + HPA), experiment tracking (MLflow), object storage (MinIO/S3), monitoring (Prometheus/Grafana).
+### Local Models 
+Voice conversion and/or singing synthesis with emphasis on fidelity: RVC (Retrieval‑based Voice Conversion) + BigVGAN 48 kHz vocoder + precompute content features (HuBERT/ ContentVec) + high‑quality F0 (RMVPE).
 
 Below are initial renders of the core flow and stack flow for ease of reference.
 
